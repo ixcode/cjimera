@@ -1,11 +1,14 @@
 package org.cjimera;
 
+import org.fest.assertions.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
 
 import static org.cjimera.ParseRepresentation.parse;
+import static org.fest.assertions.Assertions.assertThat;
+
 
 public class ParseRepresentationTest {
 
@@ -19,6 +22,7 @@ public class ParseRepresentationTest {
                                      .from().applicationFormUrlEncoded()
                                      .to(SimpleObject.class);
 
+        assertThat(result).isNotNull();
     }
 
     private static class SimpleObject {
