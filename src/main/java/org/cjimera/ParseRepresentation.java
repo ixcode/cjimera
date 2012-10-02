@@ -9,7 +9,6 @@ public class ParseRepresentation {
     }
 
 
-
     public static class ParseRepresentationBuilder {
 
         public ParseRepresentationBuilder() {
@@ -20,8 +19,8 @@ public class ParseRepresentation {
             return this;
         }
 
-        public ParseRepresentationBuilder from(MediaType mediaType) {
-            return this;
+        public SourceTypeBuilder from() {
+            return new SourceTypeBuilder(this);
         }
 
         public <T> T to(Class<T> type) {
@@ -29,5 +28,20 @@ public class ParseRepresentation {
         }
 
     }
+
+    public static class SourceTypeBuilder {
+
+        private ParseRepresentationBuilder parent;
+
+        public SourceTypeBuilder(ParseRepresentationBuilder parent) {
+            this.parent = parent;
+        }
+
+        public ParseRepresentationBuilder applicationFormUrlEncoded() {
+            return parent;
+        }
+
+    }
+
 
 }

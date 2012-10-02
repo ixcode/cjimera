@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import java.io.InputStream;
 
-import static org.cjimera.MediaType.APPLICATION_FORM_URLENCODED;
 import static org.cjimera.ParseRepresentation.parse;
 
 public class ParseRepresentationTest {
@@ -16,9 +15,9 @@ public class ParseRepresentationTest {
 
         InputStream in = null;
 
-        parse().inputStream(in)
-               .from(APPLICATION_FORM_URLENCODED)
-               .to(SimpleObject.class);
+        SimpleObject result = parse().inputStream(in)
+                                     .from().applicationFormUrlEncoded()
+                                     .to(SimpleObject.class);
 
     }
 
