@@ -3,6 +3,7 @@ package org.cjimera;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static ixcode.platform.io.IoClasspath.inputStreamFromClasspathEntry;
 import static org.cjimera.ParseRepresentation.parse;
@@ -43,6 +44,17 @@ public class ParseRepresentationTest {
 
     }
 
+    @Test
+    public void multiple_values_with_the_same_name() {
+        ObjectWithListProperty result = processFormData("multiple_values_with_same_name_form_data.txt", ObjectWithListProperty.class);
+
+        assertThat(result.name).isEqualTo("Johnny");
+        assertThat(result.favouriteBooks.size()).isEqualTo(2);
+        assertThat(result.favouriteBooks.get(0)).isEqualTo("UBIK");
+        assertThat(result.favouriteBooks.get(1)).isEqualTo("IROBOT");
+
+    }
+
 
     private static <T> T processFormData(String entity, Class<T> type) {
         InputStream in = inputStreamFromClasspathEntry(ParseRepresentationTest.class, entity);
@@ -67,6 +79,17 @@ public class ParseRepresentationTest {
             this.firstName = firstName;
             this.lastName = lastName;
             this.age = age;
+        }
+    }
+
+    private static class ObjectWithListProperty {
+
+        public final String name;
+        public final List<String> favouriteBooks;
+
+        private ObjectWithListProperty(String name, List<String> favouriteBooks) {
+            this.name = name;
+            this.favouriteBooks = favouriteBooks;
         }
     }
 

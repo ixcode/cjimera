@@ -37,11 +37,20 @@ public class ParseRepresentation {
 
         withEntriesIn(valueMap).apply(new Action<Map.Entry<String, Object>>() {
             @Override public void to(Map.Entry<String, Object> item, Collection<Map.Entry<String, Object>> tail) {
-                objectBuilder.setProperty(item.getKey()).fromString(item.getValue().toString());
+                populateValue(item, objectBuilder);
             }
         });
 
         return objectBuilder.build();
+    }
+
+    private void populateValue(Map.Entry<String, Object> item, ObjectBuilder objectBuilder) {
+        if (item.getValue() instanceof String) {
+            objectBuilder.setProperty(item.getKey()).fromString(item.getValue().toString());
+            return;
+        }
+
+        objectBuilder.setProperty(item.getKey()).asObject(item.getValue());
     }
 
     private FArrayList<Map.Entry<String, Object>> withEntriesIn(Map<String, Object> valueMap) {

@@ -5,7 +5,9 @@ import ixcode.platform.exception.RuntimeExceptionX;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static ixcode.platform.io.IoStreamHandling.readFully;
@@ -22,10 +24,24 @@ public class ApplicationFormUrlEncodedParser implements StringParser {
 
         for (String parameter : parameters) {
             String[] tuple = parameter.split("=");
-            values.put(tuple[0], unencode(tuple[1]));
+            addValue(values, tuple[0], unencode(tuple[1]));
         }
 
         return values;
+    }
+
+    private void addValue(Map<String, Object> values, String key, String value) {
+        if (values.containsKey(key)) {
+            if (values.get(key) instanceof String) {
+                List<String> list = new ArrayList<String>();
+                list.add((String)values.get(key));
+                values.put(key, list);
+            }
+
+            ((List<String>)values.get(key)).add(value);
+            return;
+        }
+        values.put(key, value);
     }
 
     private String unencode(String s) {
