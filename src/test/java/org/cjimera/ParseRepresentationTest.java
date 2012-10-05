@@ -1,6 +1,5 @@
 package org.cjimera;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -15,20 +14,33 @@ public class ParseRepresentationTest {
 
 
     @Test
-    @Ignore("not yet implemented")
-    public void parse_application_form() {
+    public void single_field_form() {
 
-        InputStream in = inputStreamFromClasspathEntry(this, "single_parameter_form_data.txt");
-
-        SimpleObject result = parse()
-                .inputStream(in)
-                .from().applicationFormUrlEncoded()
-                .to(SimpleObject.class);
+        SimpleObject result = processFormData("single_parameter_form_data.txt", SimpleObject.class);
 
         assertThat(result).isNotNull();
         assertThat(result.firstName).isEqualTo("Johnny");
         assertThat(result.lastName).isNull();
 
+    }
+
+    @Test
+    public void multiple_field_form() {
+
+        SimpleObject result = processFormData("multiple_parameter_form_data.txt", SimpleObject.class);
+
+        assertThat(result).isNotNull();
+        assertThat(result.firstName).isEqualTo("Johnny");
+        assertThat(result.lastName).isEqualTo("Billy");
+
+    }
+
+    private static <T> T processFormData(String entity, Class<T> type) {
+        InputStream in = inputStreamFromClasspathEntry(ParseRepresentationTest.class, entity);
+
+        return parse().inputStream(in)
+                .from().applicationFormUrlEncoded()
+                .to(type);
     }
 
 
