@@ -1,43 +1,67 @@
 package org.cjimera;
 
+import ixcode.platform.collection.Action;
+import ixcode.platform.collection.FArrayList;
+import ixcode.platform.reflect.ObjectBuilder;
+
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
 
 public class ParseRepresentation {
 
-    public static ParseRepresentationBuilder parse() {
-        return new ParseRepresentationBuilder();
+    private StringParser parser;
+    private InputStream in;
+
+    public static ParseRepresentation parse() {
+        return new ParseRepresentation();
     }
 
 
-    public static class ParseRepresentationBuilder {
-
-        public ParseRepresentationBuilder() {
-
-        }
-
-        public ParseRepresentationBuilder inputStream(InputStream in) {
-            return this;
-        }
-
-        public SourceTypeBuilder from() {
-            return new SourceTypeBuilder(this);
-        }
-
-        public <T> T to(Class<T> type) {
-            return null;
-        }
-
+    private ParseRepresentation() {
     }
 
-    public static class SourceTypeBuilder {
+    public ParseRepresentation inputStream(InputStream in) {
+        this.in = in;
+        return this;
+    }
 
-        private ParseRepresentationBuilder parent;
+    public SourceType from() {
+        return new SourceType(this);
+    }
 
-        public SourceTypeBuilder(ParseRepresentationBuilder parent) {
+    public <T> T to(Class<T> type) {
+        Map<String, Object> valueMap = parser.toMap(in);
+
+        final ObjectBuilder objectBuilder = new ObjectBuilder(type);
+
+        withEntriesIn(valueMap).apply(new Action<Map.Entry<String, Object>>() {
+            @Override public void to(Map.Entry<String, Object> item, Collection<Map.Entry<String, Object>> tail) {
+                objectBuilder.setProperty(item.getKey()).fromString(item.getValue().toString());
+            }
+        });
+
+        return objectBuilder.build();
+    }
+
+    private FArrayList<Map.Entry<String, Object>> withEntriesIn(Map<String, Object> valueMap) {
+        return new FArrayList<Map.Entry<String, Object>>(valueMap.entrySet());
+    }
+
+    private void useParser(StringParser parser) {
+        this.parser = parser;
+    }
+
+    public static class SourceType {
+
+        private ParseRepresentation parent;
+
+        public SourceType(ParseRepresentation parent) {
             this.parent = parent;
         }
 
-        public ParseRepresentationBuilder applicationFormUrlEncoded() {
+        public ParseRepresentation applicationFormUrlEncoded() {
+            parent.useParser(new ApplicationFormUrlEncodedParser());
             return parent;
         }
 
