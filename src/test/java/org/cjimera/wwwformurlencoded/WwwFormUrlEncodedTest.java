@@ -61,7 +61,7 @@ public class WwwFormUrlEncodedTest {
         InputStream in = inputStreamFromClasspathEntry(WwwFormUrlEncodedTest.class, entity);
 
         return parse().inputStream(in)
-                .from().applicationFormUrlEncoded()
+                .from().wwwFormUrlEncoded()
                 .to(type);
     }
 

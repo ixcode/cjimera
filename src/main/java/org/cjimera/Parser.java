@@ -70,7 +70,7 @@ public class Parser {
             this.parent = parent;
         }
 
-        public Parser applicationFormUrlEncoded() {
+        public Parser wwwFormUrlEncoded() {
             parent.useParser(new WwwFormUrlEncodedParser());
             return parent;
         }
