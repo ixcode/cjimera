@@ -1,4 +1,4 @@
-package org.cjimera;
+package org.cjimera.wwwformurlencoded;
 
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * If you only see %A3 the browser is not sending back UTF-8!!
  */
-public class ApplicationFormUrlEncodedParserTest {
+public class UrlEncodingTest {
 
     @Test
     public void decode_pound() throws Exception {
@@ -23,8 +23,6 @@ public class ApplicationFormUrlEncodedParserTest {
     public void what_the_hell_is_going_on_with_urlencoding() throws Exception {
         String utf8String = "This is a pound character: \u00A3";
 
-
-        System.out.println("Default charset " + Charset.defaultCharset().name());
         String encodedString = URLEncoder.encode(utf8String, "UTF-8");
 
         assertThat(encodedString).isEqualTo("This+is+a+pound+character%3A+%C2%A3");

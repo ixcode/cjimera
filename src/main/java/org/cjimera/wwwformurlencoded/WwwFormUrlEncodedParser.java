@@ -1,6 +1,7 @@
-package org.cjimera;
+package org.cjimera.wwwformurlencoded;
 
 import ixcode.platform.exception.RuntimeExceptionX;
+import org.cjimera.InputFormat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,7 @@ import java.util.Map;
 import static ixcode.platform.io.IoStreamHandling.readFully;
 import static java.lang.String.format;
 
-public class ApplicationFormUrlEncodedParser implements StringParser {
+public class WwwFormUrlEncodedParser implements InputFormat {
 
     @Override public Map<String, Object> toMap(InputStream in) {
         String rawForm = readFully(in, "UTF-8");

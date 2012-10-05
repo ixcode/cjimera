@@ -1,17 +1,18 @@
-package org.cjimera;
+package org.cjimera.wwwformurlencoded;
 
+import org.cjimera.Parser;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.List;
 
 import static ixcode.platform.io.IoClasspath.inputStreamFromClasspathEntry;
-import static org.cjimera.ParseRepresentation.parse;
+import static org.cjimera.Parser.parse;
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ParseRepresentationTest {
+public class WwwFormUrlEncodedTest {
 
-    private ParseRepresentation parseRepresentation;
+    private Parser parser;
 
 
     @Test
@@ -57,7 +58,7 @@ public class ParseRepresentationTest {
 
 
     private static <T> T processFormData(String entity, Class<T> type) {
-        InputStream in = inputStreamFromClasspathEntry(ParseRepresentationTest.class, entity);
+        InputStream in = inputStreamFromClasspathEntry(WwwFormUrlEncodedTest.class, entity);
 
         return parse().inputStream(in)
                 .from().applicationFormUrlEncoded()

@@ -3,25 +3,26 @@ package org.cjimera;
 import ixcode.platform.collection.Action;
 import ixcode.platform.collection.FArrayList;
 import ixcode.platform.reflect.ObjectBuilder;
+import org.cjimera.wwwformurlencoded.WwwFormUrlEncodedParser;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
-public class ParseRepresentation {
+public class Parser {
 
-    private StringParser parser;
+    private InputFormat parser;
     private InputStream in;
 
-    public static ParseRepresentation parse() {
-        return new ParseRepresentation();
+    public static Parser parse() {
+        return new Parser();
     }
 
 
-    private ParseRepresentation() {
+    private Parser() {
     }
 
-    public ParseRepresentation inputStream(InputStream in) {
+    public Parser inputStream(InputStream in) {
         this.in = in;
         return this;
     }
@@ -57,20 +58,20 @@ public class ParseRepresentation {
         return new FArrayList<Map.Entry<String, Object>>(valueMap.entrySet());
     }
 
-    private void useParser(StringParser parser) {
+    private void useParser(InputFormat parser) {
         this.parser = parser;
     }
 
     public static class SourceType {
 
-        private ParseRepresentation parent;
+        private Parser parent;
 
-        public SourceType(ParseRepresentation parent) {
+        public SourceType(Parser parent) {
             this.parent = parent;
         }
 
-        public ParseRepresentation applicationFormUrlEncoded() {
-            parent.useParser(new ApplicationFormUrlEncodedParser());
+        public Parser applicationFormUrlEncoded() {
+            parent.useParser(new WwwFormUrlEncodedParser());
             return parent;
         }
 

@@ -3,7 +3,7 @@ package org.cjimera;
 import java.io.InputStream;
 import java.util.Map;
 
-public interface StringParser {
+public interface InputFormat {
 
     Map<String, Object> toMap(InputStream in);
 }
