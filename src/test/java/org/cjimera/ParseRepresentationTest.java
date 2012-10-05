@@ -32,8 +32,10 @@ public class ParseRepresentationTest {
         assertThat(result).isNotNull();
         assertThat(result.firstName).isEqualTo("Johnny");
         assertThat(result.lastName).isEqualTo("Billy");
+        assertThat(result.age).isEqualTo(666);
 
     }
+
 
     private static <T> T processFormData(String entity, Class<T> type) {
         InputStream in = inputStreamFromClasspathEntry(ParseRepresentationTest.class, entity);
@@ -48,14 +50,16 @@ public class ParseRepresentationTest {
 
         public final String firstName;
         public final String lastName;
+        public final Long age;
 
         private SimpleObject(String firstName) {
-            this(firstName, null);
+            this(firstName, null, null);
         }
 
-        private SimpleObject(String firstName, String lastName) {
+        private SimpleObject(String firstName, String lastName, Long age) {
             this.firstName = firstName;
             this.lastName = lastName;
+            this.age = age;
         }
     }
 
