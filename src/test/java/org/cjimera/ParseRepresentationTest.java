@@ -18,7 +18,6 @@ public class ParseRepresentationTest {
 
         SimpleObject result = processFormData("single_parameter_form_data.txt", SimpleObject.class);
 
-        assertThat(result).isNotNull();
         assertThat(result.firstName).isEqualTo("Johnny");
         assertThat(result.lastName).isNull();
 
@@ -29,10 +28,18 @@ public class ParseRepresentationTest {
 
         SimpleObject result = processFormData("multiple_parameter_form_data.txt", SimpleObject.class);
 
-        assertThat(result).isNotNull();
         assertThat(result.firstName).isEqualTo("Johnny");
         assertThat(result.lastName).isEqualTo("Billy");
         assertThat(result.age).isEqualTo(666);
+
+    }
+
+    @Test
+    public void url_encoded_value() {
+
+        SimpleObject result = processFormData("urlencoded_form_data.txt", SimpleObject.class);
+
+        assertThat(result.firstName).isEqualTo("Johnny \u00A3 mcfoo");
 
     }
 
