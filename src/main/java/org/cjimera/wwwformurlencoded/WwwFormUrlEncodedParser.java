@@ -14,6 +14,10 @@ import java.util.Map;
 import static ixcode.platform.io.IoStreamHandling.readFully;
 import static java.lang.String.format;
 
+/**
+ * See http://commons.apache.org/ognl/language-guide.html for more information about the syntax for declaring the object
+ * graph mapping.
+ */
 public class WwwFormUrlEncodedParser implements InputFormat {
 
     @Override public Map<String, Object> toMap(InputStream in) {
@@ -25,21 +29,54 @@ public class WwwFormUrlEncodedParser implements InputFormat {
 
         for (String parameter : parameters) {
             String[] tuple = parameter.split("=");
-            addValue(values, tuple[0], unencode(tuple[1]));
+
+            String key = tuple[0];
+            String urlEncodedValue = tuple[1];
+
+            if (key.contains(".")) {
+                processOgnlName(values, key, unencode(urlEncodedValue));
+            } else {
+                addValueToMap(values, key, unencode(urlEncodedValue));
+            }
         }
 
         return values;
     }
 
-    private void addValue(Map<String, Object> values, String key, String value) {
+    private static void processOgnlName(Map<String, Object> values, String key, String value) {
+        String[] path = key.split("\\.");
+
+        recursePath(path, 1, values, value);
+
+    }
+
+    private static void recursePath(String[] path, int index, Map<String, Object> values, String value) {
+        String parentKey = path[index-1];
+        String currentKey = path[index];
+
+        if (!values.containsKey(parentKey)) {
+            values.put(parentKey, new LinkedHashMap<String, Object>());
+        }
+
+        Map<String, Object> childValues = (Map<String, Object>) values.get(parentKey);
+
+        if (index == path.length - 1) {
+            addValueToMap(childValues, currentKey, value);
+            return;
+        }
+
+        recursePath(path, index++, childValues, value);
+    }
+
+    private static void addValueToMap(Map<String, Object> values, String key, String value) {
         if (values.containsKey(key)) {
             if (values.get(key) instanceof String) {
                 List<String> list = new ArrayList<String>();
-                list.add((String)values.get(key));
+                list.add((String) values.get(key));
                 values.put(key, list);
             }
 
-            ((List<String>)values.get(key)).add(value);
+            ((List<String>) values.get(key)).add(value);
             return;
         }
         values.put(key, value);

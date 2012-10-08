@@ -34,6 +34,10 @@ public class Parser {
     public <T> T to(Class<T> type) {
         Map<String, Object> valueMap = parser.toMap(in);
 
+        return populateObject(type, valueMap);
+    }
+
+    private <T> T populateObject(Class<T> type, Map<String, Object> valueMap) {
         final ObjectBuilder objectBuilder = new ObjectBuilder(type);
 
         withEntriesIn(valueMap).apply(new Action<Map.Entry<String, Object>>() {
@@ -46,12 +50,24 @@ public class Parser {
     }
 
     private void populateValue(Map.Entry<String, Object> item, ObjectBuilder objectBuilder) {
-        if (item.getValue() instanceof String) {
-            objectBuilder.setProperty(item.getKey()).fromString(item.getValue().toString());
+        String propertyName = item.getKey();
+        Object propertyValue = item.getValue();
+
+        if (propertyValue instanceof String) {
+            objectBuilder.setProperty(propertyName).fromString(propertyValue.toString());
             return;
         }
 
-        objectBuilder.setProperty(item.getKey()).asObject(item.getValue());
+        if ((propertyValue instanceof Map)
+                && !objectBuilder.isMap(propertyName)) {
+
+            Object child = populateObject(objectBuilder.getPropertyType(propertyName),
+                                          (Map<String, Object>) propertyValue);
+            objectBuilder.setProperty(propertyName).asObject(child);
+            return;
+        }
+
+        objectBuilder.setProperty(propertyName).asObject(propertyValue);
     }
 
     private FArrayList<Map.Entry<String, Object>> withEntriesIn(Map<String, Object> valueMap) {
