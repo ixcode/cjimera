@@ -53,17 +53,16 @@ public class Parser {
     }
 
     /**
-     * @todo Need to introduce a method for setting a collection method - needs to be on ObjectBuilder we are using too many of its ifc here
+     * @todo Need to introduce a method for setting a collection method - needs to be on ObjectBuilder? we are using too
+     * many of its ifc here
      */
     private void populateValue(Map.Entry<String, Object> item, ObjectBuilder objectBuilder) {
         String propertyName = item.getKey();
         Object propertyValue = item.getValue();
 
-        if (!objectBuilder.hasProperty(propertyName)) {
-            return;
-        }
 
-        if (objectBuilder.isCollection(propertyName)
+        if (objectBuilder.hasProperty(propertyName)
+                && objectBuilder.isCollection(propertyName)
                 && !objectBuilder.isMap(propertyName)
                 && !(propertyValue instanceof Collection)) {
 
@@ -81,6 +80,7 @@ public class Parser {
         }
 
         if ((propertyValue instanceof Map)
+                && objectBuilder.hasProperty(propertyName)
                 && !objectBuilder.isMap(propertyName)) {
 
             Object child = populateObject(objectBuilder.getPropertyType(propertyName),

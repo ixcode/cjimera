@@ -1,6 +1,7 @@
 package org.cjimera.wwwformurlencoded;
 
 import org.cjimera.Parser;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -70,6 +71,21 @@ public class WwwFormUrlEncodedTest {
         assertThat(result.phoneNumber.areaCode).isEqualTo("+44");
         assertThat(result.phoneNumber.number).isEqualTo("335 3456");
 
+
+    }
+
+    @Test
+    @Ignore("WIP")
+    public void object_with_list_of_children() {
+        ObjectWithListOfChildren result = processFormData("list_of_child_objects.txt", ObjectWithListOfChildren.class);
+
+        assertThat(result.people.size()).isEqualTo(2);
+
+        assertThat(result.people.get(0).name).isEqualTo("johnny");
+        assertThat(result.people.get(0).age).isEqualTo(23);
+
+        assertThat(result.people.get(1).name).isEqualTo("johnny");
+        assertThat(result.people.get(1).age).isEqualTo(23);
 
     }
 
@@ -203,4 +219,23 @@ public class WwwFormUrlEncodedTest {
         }
     }
 
+    private static class ObjectWithListOfChildren {
+
+        private final List<Person> people;
+
+        private ObjectWithListOfChildren(List<Person> people) {
+            this.people = people;
+        }
+    }
+
+    private static class Person {
+
+        private final String name;
+        private final int age;
+
+        private Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+    }
 }

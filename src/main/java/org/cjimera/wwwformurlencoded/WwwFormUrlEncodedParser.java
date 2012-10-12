@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ixcode.platform.io.IoStreamHandling.readFully;
 import static java.lang.String.format;
@@ -33,11 +35,7 @@ public class WwwFormUrlEncodedParser implements InputFormat {
             String key = tuple[0];
             String urlEncodedValue = tuple[1];
 
-            if (key.contains(".")) {
-                processOgnlName(values, key, unencode(urlEncodedValue));
-            } else {
-                addValueToMap(values, key, unencode(urlEncodedValue));
-            }
+            processOgnlName(values, key, unencode(urlEncodedValue));
         }
 
         return values;
@@ -46,13 +44,32 @@ public class WwwFormUrlEncodedParser implements InputFormat {
     private static void processOgnlName(Map<String, Object> values, String key, String value) {
         String[] path = key.split("\\.");
 
-        recursePath(path, 1, values, value);
+        recursePath(path, values, value);
 
     }
 
+    private static void recursePath(String[] path, Map<String, Object> values, String value) {
+        String currentKey = path[0];
+
+        if (path.length == 1) {
+            addValueToMap(values, currentKey, value);
+            return;
+        }
+
+        recursePath(path, 1, values, value);
+    }
+
     private static void recursePath(String[] path, int index, Map<String, Object> values, String value) {
-        String parentKey = path[index-1];
         String currentKey = path[index];
+        String parentKey = path[index - 1];
+
+        Pattern p = Pattern.compile("(.*)\\[([0-9]*)\\]");
+
+        Matcher matcher = p.matcher(currentKey);
+
+        if (matcher.matches()) {
+            parentKey = matcher.group(0);
+        }
 
         if (!values.containsKey(parentKey)) {
             values.put(parentKey, new LinkedHashMap<String, Object>());
@@ -64,8 +81,9 @@ public class WwwFormUrlEncodedParser implements InputFormat {
             addValueToMap(childValues, currentKey, value);
             return;
         }
-
         recursePath(path, index++, childValues, value);
+
+
     }
 
     private static void addValueToMap(Map<String, Object> values, String key, String value) {
