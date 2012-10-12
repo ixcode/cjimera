@@ -32,6 +32,9 @@
     <file url="file://$PROJECT_DIR$/../../../maven/poms/super" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../../../platform/core" charset="UTF-8" />
   </component>
+  <component name="GradleSettings">
+    <option name="gradleHome" value="/usr/local/Cellar/gradle/1.2" />
+  </component>
   <component name="IdProvider" IDEtalkID="965F466FEA998184BA19F39C4FEBD8DC" />
   <component name="InspectionProjectProfileManager">
     <profiles>
