@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 public class Parser {
 
     private InputFormat parser;
@@ -52,6 +54,18 @@ public class Parser {
     private void populateValue(Map.Entry<String, Object> item, ObjectBuilder objectBuilder) {
         String propertyName = item.getKey();
         Object propertyValue = item.getValue();
+
+        if (!objectBuilder.hasProperty(propertyName)) {
+            return;
+        }
+
+        if (objectBuilder.isCollection(propertyName)
+                && !objectBuilder.isMap(propertyName)
+                && !(propertyValue instanceof Collection)) {
+
+            objectBuilder.setProperty(propertyName).asObject(asList(propertyValue));
+            return;
+        }
 
         if (propertyValue instanceof String) {
             objectBuilder.setProperty(propertyName).fromString(propertyValue.toString());
