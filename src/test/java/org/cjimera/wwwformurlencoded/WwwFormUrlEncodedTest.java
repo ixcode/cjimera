@@ -88,6 +88,20 @@ public class WwwFormUrlEncodedTest {
 
     }
 
+    @Test
+    public void object_with_list_of_children_missing_indexes() {
+        ObjectWithListOfChildren result = processFormData("list_of_child_objects_missing_indexes.txt", ObjectWithListOfChildren.class);
+
+        assertThat(result.people.size()).isEqualTo(11);
+
+        assertThat(result.people.get(10).name).isEqualTo("Johnny");
+        assertThat(result.people.get(10).age).isEqualTo(23);
+
+        assertThat(result.people.get(3).name).isEqualTo("bobby");
+        assertThat(result.people.get(3).age).isEqualTo(34);
+
+    }
+
 
     private static <T> T processFormData(String entity, Class<T> type) {
         InputStream in = inputStreamFromClasspathEntry(WwwFormUrlEncodedTest.class, entity);

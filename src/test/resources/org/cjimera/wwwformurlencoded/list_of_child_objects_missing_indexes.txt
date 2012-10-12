@@ -1,0 +1,1 @@
+people[10].name=Johnny&people[10].age=23&people[3].name=bobby&people[3].age=34

@@ -99,8 +99,12 @@ public class Parser {
 
             for (Object listChildValues : ((List) propertyValue)) {
                 if (listChildValues instanceof Map) {
-                    Object child = populateObject(objectBuilder.getTypeOfCollectionCalled(propertyName),
-                                                  (Map<String, Object>) listChildValues);
+
+                    Map<String, Object> listChildValueMap = (Map<String, Object>) listChildValues;
+
+                    Object child = (listChildValueMap.isEmpty())
+                            ? null
+                            : populateObject(objectBuilder.getTypeOfCollectionCalled(propertyName), listChildValueMap);
 
                     processedList.add(child);
                 } else {

@@ -76,8 +76,10 @@ public class WwwFormUrlEncodedParser implements InputFormat {
 
             List<Map<String, Object>> childList = (List<Map<String, Object>>) values.get(parentKeyName);
 
-            if (childList.size() < ognlKey.arrayIndex + 1) {
-                for (int i = 0; i < (ognlKey.arrayIndex + 1) - childList.size(); ++i) {
+            int originalSize = childList.size();
+
+            if (originalSize < ognlKey.arrayIndex + 1) {
+                for (int i = 0; i < (ognlKey.arrayIndex + 1) - originalSize; ++i) {
                     childList.add(new LinkedHashMap<String, Object>());
                 }
             }
