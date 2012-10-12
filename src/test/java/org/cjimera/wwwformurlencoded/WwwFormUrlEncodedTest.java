@@ -75,17 +75,16 @@ public class WwwFormUrlEncodedTest {
     }
 
     @Test
-    @Ignore("WIP")
     public void object_with_list_of_children() {
         ObjectWithListOfChildren result = processFormData("list_of_child_objects.txt", ObjectWithListOfChildren.class);
 
         assertThat(result.people.size()).isEqualTo(2);
 
-        assertThat(result.people.get(0).name).isEqualTo("johnny");
+        assertThat(result.people.get(0).name).isEqualTo("Johnny");
         assertThat(result.people.get(0).age).isEqualTo(23);
 
-        assertThat(result.people.get(1).name).isEqualTo("johnny");
-        assertThat(result.people.get(1).age).isEqualTo(23);
+        assertThat(result.people.get(1).name).isEqualTo("bobby");
+        assertThat(result.people.get(1).age).isEqualTo(34);
 
     }
 

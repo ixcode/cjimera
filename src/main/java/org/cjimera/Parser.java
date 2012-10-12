@@ -6,6 +6,7 @@ import ixcode.platform.reflect.ObjectBuilder;
 import org.cjimera.wwwformurlencoded.WwwFormUrlEncodedParser;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,28 @@ public class Parser {
             Object child = populateObject(objectBuilder.getPropertyType(propertyName),
                                           (Map<String, Object>) propertyValue);
             objectBuilder.setProperty(propertyName).asObject(child);
+            return;
+        }
+
+        if ((propertyValue instanceof List)
+                && objectBuilder.hasProperty(propertyName)
+                && objectBuilder.isList(propertyName)
+                && ((List) propertyValue).size() > 0) {
+
+            List processedList = new ArrayList();
+
+            for (Object listChildValues : ((List) propertyValue)) {
+                if (listChildValues instanceof Map) {
+                    Object child = populateObject(objectBuilder.getTypeOfCollectionCalled(propertyName),
+                                                  (Map<String, Object>) listChildValues);
+
+                    processedList.add(child);
+                } else {
+                    processedList.add(listChildValues);
+                }
+            }
+
+            objectBuilder.setProperty(propertyName).asObject(processedList);
             return;
         }
 
