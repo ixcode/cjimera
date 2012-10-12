@@ -7,6 +7,7 @@ import org.cjimera.wwwformurlencoded.WwwFormUrlEncodedParser;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -51,6 +52,9 @@ public class Parser {
         return objectBuilder.build();
     }
 
+    /**
+     * @todo Need to introduce a method for setting a collection method - needs to be on ObjectBuilder we are using too many of its ifc here
+     */
     private void populateValue(Map.Entry<String, Object> item, ObjectBuilder objectBuilder) {
         String propertyName = item.getKey();
         Object propertyValue = item.getValue();
@@ -62,6 +66,10 @@ public class Parser {
         if (objectBuilder.isCollection(propertyName)
                 && !objectBuilder.isMap(propertyName)
                 && !(propertyValue instanceof Collection)) {
+
+            if (!List.class.isAssignableFrom(objectBuilder.getPropertyType(propertyName))) {
+                throw new RuntimeException("Only support List collections right now.");
+            }
 
             objectBuilder.setProperty(propertyName).asObject(asList(propertyValue));
             return;
