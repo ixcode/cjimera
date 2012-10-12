@@ -22,6 +22,8 @@ import static java.lang.String.format;
  */
 public class WwwFormUrlEncodedParser implements InputFormat {
 
+    private final OgnlKeyParser ognlKeyParser = new OgnlKeyParser();
+
     @Override public Map<String, Object> toMap(InputStream in) {
         String rawForm = readFully(in, "UTF-8");
 
@@ -41,14 +43,14 @@ public class WwwFormUrlEncodedParser implements InputFormat {
         return values;
     }
 
-    private static void processOgnlName(Map<String, Object> values, String key, String value) {
+    private void processOgnlName(Map<String, Object> values, String key, String value) {
         String[] path = key.split("\\.");
 
         recursePath(path, values, value);
 
     }
 
-    private static void recursePath(String[] path, Map<String, Object> values, String value) {
+    private void recursePath(String[] path, Map<String, Object> values, String value) {
         String currentKey = path[0];
 
         if (path.length == 1) {
@@ -59,23 +61,18 @@ public class WwwFormUrlEncodedParser implements InputFormat {
         recursePath(path, 1, values, value);
     }
 
-    private static void recursePath(String[] path, int index, Map<String, Object> values, String value) {
+    private void recursePath(String[] path, int index, Map<String, Object> values, String value) {
         String currentKey = path[index];
-        String parentKey = path[index - 1];
 
-        Pattern p = Pattern.compile("(.*)\\[([0-9]*)\\]");
+        OgnlKeyParser.OgnlKey ognlKey = ognlKeyParser.parse(path[index - 1]);
 
-        Matcher matcher = p.matcher(currentKey);
+        String parentKeyName = ognlKey.name;
 
-        if (matcher.matches()) {
-            parentKey = matcher.group(0);
+        if (!values.containsKey(parentKeyName)) {
+            values.put(parentKeyName, new LinkedHashMap<String, Object>());
         }
 
-        if (!values.containsKey(parentKey)) {
-            values.put(parentKey, new LinkedHashMap<String, Object>());
-        }
-
-        Map<String, Object> childValues = (Map<String, Object>) values.get(parentKey);
+        Map<String, Object> childValues = (Map<String, Object>) values.get(parentKeyName);
 
         if (index == path.length - 1) {
             addValueToMap(childValues, currentKey, value);
