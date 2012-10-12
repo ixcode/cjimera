@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static ixcode.platform.io.IoStreamHandling.readFully;
 import static java.lang.String.format;
@@ -68,11 +66,33 @@ public class WwwFormUrlEncodedParser implements InputFormat {
 
         String parentKeyName = ognlKey.name;
 
-        if (!values.containsKey(parentKeyName)) {
-            values.put(parentKeyName, new LinkedHashMap<String, Object>());
+        Map<String, Object> childValues = null;
+
+        if (ognlKey.isArray) {
+
+            if (!values.containsKey(parentKeyName)) {
+                values.put(parentKeyName, new ArrayList<Map<String, Object>>());
+            }
+
+            List<Map<String, Object>> childList = (List<Map<String, Object>>) values.get(parentKeyName);
+
+            if (childList.size() < ognlKey.arrayIndex + 1) {
+                for (int i = 0; i < (ognlKey.arrayIndex + 1) - childList.size(); ++i) {
+                    childList.add(new LinkedHashMap<String, Object>());
+                }
+            }
+
+            childValues = childList.get(ognlKey.arrayIndex);
+
+        } else {
+
+            if (!values.containsKey(parentKeyName)) {
+                values.put(parentKeyName, new LinkedHashMap<String, Object>());
+            }
+
+            childValues = (Map<String, Object>) values.get(parentKeyName);
         }
 
-        Map<String, Object> childValues = (Map<String, Object>) values.get(parentKeyName);
 
         if (index == path.length - 1) {
             addValueToMap(childValues, currentKey, value);
