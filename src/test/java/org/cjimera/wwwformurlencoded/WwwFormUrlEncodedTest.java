@@ -102,6 +102,20 @@ public class WwwFormUrlEncodedTest {
 
     }
 
+    @Test
+    public void object_with_array_of_children_missing_indexes() {
+        ObjectWithArrayOfChildren result = processFormData("list_of_child_objects_missing_indexes.txt", ObjectWithArrayOfChildren.class);
+
+        assertThat(result.people.length).isEqualTo(11);
+
+        assertThat(result.people[10].name).isEqualTo("Johnny");
+        assertThat(result.people[10].age).isEqualTo(23);
+
+        assertThat(result.people[3].name).isEqualTo("bobby");
+        assertThat(result.people[3].age).isEqualTo(34);
+
+    }
+
 
     private static <T> T processFormData(String entity, Class<T> type) {
         InputStream in = inputStreamFromClasspathEntry(WwwFormUrlEncodedTest.class, entity);
@@ -237,6 +251,15 @@ public class WwwFormUrlEncodedTest {
         private final List<Person> people;
 
         private ObjectWithListOfChildren(List<Person> people) {
+            this.people = people;
+        }
+    }
+
+    private static class ObjectWithArrayOfChildren {
+
+        private final Person[] people;
+
+        private ObjectWithArrayOfChildren(Person[] people) {
             this.people = people;
         }
     }

@@ -3,9 +3,11 @@ package org.cjimera;
 import ixcode.platform.collection.Action;
 import ixcode.platform.collection.FArrayList;
 import ixcode.platform.reflect.ObjectBuilder;
+import ixcode.platform.reflect.ObjectFactory;
 import org.cjimera.wwwformurlencoded.WwwFormUrlEncodedParser;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -97,10 +99,10 @@ public class Parser {
 
             List processedList = new ArrayList();
 
-            for (Object listChildValues : ((List) propertyValue)) {
-                if (listChildValues instanceof Map) {
+            for (Object listChildValue : ((List) propertyValue)) {
+                if (listChildValue instanceof Map) {
 
-                    Map<String, Object> listChildValueMap = (Map<String, Object>) listChildValues;
+                    Map<String, Object> listChildValueMap = (Map<String, Object>) listChildValue;
 
                     Object child = (listChildValueMap.isEmpty())
                             ? null
@@ -108,11 +110,46 @@ public class Parser {
 
                     processedList.add(child);
                 } else {
-                    processedList.add(listChildValues);
+                    processedList.add(listChildValue);
                 }
             }
 
             objectBuilder.setProperty(propertyName).asObject(processedList);
+            return;
+        }
+
+        if ((propertyValue instanceof List)
+                && objectBuilder.hasProperty(propertyName)
+                && objectBuilder.isArray(propertyName)
+                && ((List) propertyValue).size() > 0) {
+
+            List inputList = (List) propertyValue;
+
+            Class<?> arrayType = objectBuilder.getTypeOfCollectionCalled(propertyName);
+            Object processedArray = Array.newInstance(arrayType, inputList.size());
+
+            int i = 0;
+            for (Object listChildValue : inputList) {
+                if (listChildValue instanceof Map) {
+
+                    Map<String, Object> listChildValueMap = (Map<String, Object>) listChildValue;
+
+                    Object child = (listChildValueMap.isEmpty())
+                            ? null
+                            : populateObject(objectBuilder.getTypeOfCollectionCalled(propertyName), listChildValueMap);
+
+                    Array.set(processedArray, i, child);
+
+                } else {
+                    Array.set(processedArray, i, listChildValue);
+                }
+
+                i++;
+            }
+
+
+
+            objectBuilder.setProperty(propertyName).asObject(processedArray);
             return;
         }
 
